@@ -1,5 +1,7 @@
 package ru.myitschool.work.ui
 
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +10,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
 import dagger.hilt.android.AndroidEntryPoint
+import ru.myitschool.work.LoginActivity
+import ru.myitschool.work.MainActivity
 import ru.myitschool.work.R
 import ru.myitschool.work.ui.login.LoginDestination
 import ru.myitschool.work.ui.login.LoginFragment
@@ -17,7 +21,19 @@ import ru.myitschool.work.ui.qr.scan.QrScanFragment
 // НЕ ИЗМЕНЯЙТЕ НАЗВАНИЕ КЛАССА!
 @AndroidEntryPoint
 class RootActivity : AppCompatActivity() {
+    private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
+        sharedPreferences = getSharedPreferences("LoginSave", MODE_PRIVATE)
+        if (sharedPreferences.getString("login", null) != null) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        if (sharedPreferences.getString("login", null) == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root)
 

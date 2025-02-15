@@ -1,11 +1,8 @@
-package ru.myitschool.work
+package ru.myitschool.work.domain.entities
 
-data class User(
-    val id: Int,
-    val login: String,
+data class UserEntity (
     val name: String,
     val photo: String,
     val position: String,
     val lastVisit: String
 )
-

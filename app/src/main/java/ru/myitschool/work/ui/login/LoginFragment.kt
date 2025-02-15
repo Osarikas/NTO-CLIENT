@@ -1,36 +1,58 @@
 package ru.myitschool.work.ui.login
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import ru.myitschool.work.R
 import ru.myitschool.work.databinding.FragmentLoginBinding
-import ru.myitschool.work.utils.collectWhenStarted
-import ru.myitschool.work.utils.visibleOrGone
 
-@AndroidEntryPoint
 class LoginFragment : Fragment(R.layout.fragment_login) {
-    private var _binding: FragmentLoginBinding? = null
-    private val binding: FragmentLoginBinding get() = _binding!!
 
-    private val viewModel: LoginViewModel by viewModels()
+    private var _binding: FragmentLoginBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: LoginViewModel by viewModels{ LoginViewModel.Factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentLoginBinding.bind(view)
-        subscribe()
-    }
+        val textWatcher = object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+            override fun afterTextChanged(s: Editable?) { }
 
-    private fun subscribe() {
-        viewModel.state.collectWhenStarted(this) { state ->
-            binding.loading.visibleOrGone(state)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val username = binding.username.text
+                binding.loginBtn.isEnabled = username.length >= 3 && !username[0].isDigit() && username.matches(Regex("^[a-zA-Z0-9]*$"))
+            }
+        }
+        binding.username.addTextChangedListener(textWatcher)
+        binding.loginBtn.setOnClickListener{
+            if(binding.loginBtn.isEnabled){
+                viewModel.login(binding.username.text.toString())
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.state.collect { state ->
+                with(binding) {
+                    error.visibility = if (state is LoginViewModel.State.Error) View.VISIBLE else View.GONE
+                    username.isEnabled = state !is LoginViewModel.State.Loading
+                    loginBtn.isEnabled = state !is LoginViewModel.State.Loading
+
+                    if (state is LoginViewModel.State.Success) {
+                        findNavController().navigate(R.id.mainFragment)
+                    }
+                }
+            }
         }
     }
-
     override fun onDestroyView() {
-        _binding = null
         super.onDestroyView()
+        _binding = null
     }
 }

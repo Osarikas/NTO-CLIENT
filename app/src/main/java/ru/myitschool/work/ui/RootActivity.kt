@@ -5,15 +5,14 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.createGraph
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
 import dagger.hilt.android.AndroidEntryPoint
-import ru.myitschool.work.LoginActivity
-import ru.myitschool.work.MainActivity
 import ru.myitschool.work.R
-import ru.myitschool.work.ui.login.LoginDestination
+import ru.myitschool.work.databinding.ActivityRootBinding
 import ru.myitschool.work.ui.login.LoginFragment
 import ru.myitschool.work.ui.qr.scan.QrScanDestination
 import ru.myitschool.work.ui.qr.scan.QrScanFragment
@@ -21,52 +20,20 @@ import ru.myitschool.work.ui.qr.scan.QrScanFragment
 // НЕ ИЗМЕНЯЙТЕ НАЗВАНИЕ КЛАССА!
 @AndroidEntryPoint
 class RootActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityRootBinding
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        sharedPreferences = getSharedPreferences("LoginSave", MODE_PRIVATE)
-        if (sharedPreferences.getString("login", null) != null) {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-        if (sharedPreferences.getString("login", null) == null) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_root)
+        binding = ActivityRootBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+        val windowInsetsController = window.insetsController
+        windowInsetsController?.hide(android.view.WindowInsets.Type.statusBars() or android.view.WindowInsets.Type.navigationBars())
+        sharedPreferences = getSharedPreferences("LoginSave", MODE_PRIVATE)
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment?
 
-        if (navHostFragment != null) {
-            val navController = navHostFragment.navController
-            navController.graph = navController.createGraph(
-                startDestination = LoginDestination
-            ) {
-                fragment<LoginFragment, LoginDestination>()
-                fragment<QrScanFragment, QrScanDestination>()
-            }
-        }
-
-        onBackPressedDispatcher.addCallback(
-            this,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    onSupportNavigateUp()
-                }
-            }
-        )
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        val popBackResult = if (navController.previousBackStackEntry != null) {
-            navController.popBackStack()
-        } else {
-            false
-        }
-        return popBackResult || super.onSupportNavigateUp()
     }
 }

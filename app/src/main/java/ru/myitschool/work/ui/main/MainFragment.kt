@@ -38,6 +38,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             when (state) {
                 is UserState.Error -> {
                     showError()
+                    binding.loading.visibility = View.GONE
+                    binding.refresh.visibility = View.VISIBLE
                 }
 
                 is UserState.Loading -> {
@@ -69,7 +71,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             private fun logout() {
                 lifecycleScope.launch {
                     viewModel.clearUsername()
-                    delay(10) // Не всегда успевает скинуть логин
+                    delay(50) // Не всегда успевает скинуть логин
                     findNavController().navigate(R.id.loginFragment)
                 }
 

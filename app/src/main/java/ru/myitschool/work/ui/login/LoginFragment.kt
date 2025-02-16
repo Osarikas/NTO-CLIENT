@@ -22,15 +22,19 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentLoginBinding.bind(view)
         val textWatcher = object : TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
             override fun afterTextChanged(s: Editable?) { }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val username = binding.username.text
                 binding.loginBtn.isEnabled = username.length >= 3 && !username[0].isDigit() && username.matches(Regex("^[a-zA-Z0-9]*$"))
+
             }
         }
         binding.username.addTextChangedListener(textWatcher)
+        binding.loginBtn.isEnabled = false
         binding.loginBtn.setOnClickListener{
             viewModel.login(binding.username.text.toString())
 
@@ -40,7 +44,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 with(binding) {
                     error.visibility = if (state is LoginViewModel.State.Error) View.VISIBLE else View.GONE
                     username.isEnabled = state !is LoginViewModel.State.Loading
-                    loginBtn.isEnabled = state !is LoginViewModel.State.Loading
 
                     if (state is LoginViewModel.State.Success) {
                         findNavController().navigate(R.id.mainFragment)

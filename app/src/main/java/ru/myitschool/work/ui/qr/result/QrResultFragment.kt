@@ -17,9 +17,11 @@ class QrResultFragment : Fragment(R.layout.fragment_qr_result) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentQrResultBinding.bind(view)
-        var qrData = arguments?.getString("qr_data") ?: ""
-        if (qrData != "") {
+        var qrData = arguments?.getString("qr_data")
+        if (qrData != null) {
             viewModel.openDoor(OpenEntity(qrData.toLong()))
+        }
+        else{
             binding.result.text = getString(R.string.result_null_text)
         }
         viewModel.state.collectWhenStarted(this){ state->

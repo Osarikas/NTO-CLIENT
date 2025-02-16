@@ -57,11 +57,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
         setFragmentResultListener(QrScanDestination.REQUEST_KEY) { _, bundle ->
             val qrData = QrScanDestination.getDataIfExist(bundle)
-            if (qrData != null) {
-                println(qrData)
-                val bundleToQrResult = bundleOf("qr_data" to qrData)
-                findNavController().navigate(R.id.qrResultFragment, bundleToQrResult)
-            }
+            println(qrData)
+            val bundleToQrResult = bundleOf("qr_data" to qrData)
+            findNavController().navigate(R.id.qrResultFragment, bundleToQrResult)
+
         }
 
 

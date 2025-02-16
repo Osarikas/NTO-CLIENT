@@ -20,7 +20,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     private val viewModel: LoginViewModel by viewModels{ LoginViewModel.Factory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         _binding = FragmentLoginBinding.bind(view)
         val textWatcher = object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
@@ -33,9 +32,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
         binding.username.addTextChangedListener(textWatcher)
         binding.loginBtn.setOnClickListener{
-            if(binding.loginBtn.isEnabled){
-                viewModel.login(binding.username.text.toString())
-            }
+            viewModel.login(binding.username.text.toString())
+
         }
         lifecycleScope.launch {
             viewModel.state.collect { state ->

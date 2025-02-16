@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/qrResultFragment"
-        android:name="ru.myitschool.work.QrResultFragment"
+        android:name="ru.myitschool.work.ui.qr.result.QrResultFragment"
         android:label="QrResultFragment"
         tools:layout="@layout/fragment_qr_result">
         <action
